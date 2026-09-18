@@ -1,469 +1,164 @@
 <!DOCTYPE html>
 <html lang="hu">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bejelentkezés & Regisztráció | Dashboard</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
+    <title>Bejelentkezés</title>
     <style>
-        .page-transition {
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #fff;
+            display: grid;
+            place-items: center;
+            height: 100vh
+        }
+        .box {
+            width: 360px;
+            background: #111827;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, .25)
+        }
+        .tab {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0
+        }
+        .tab button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            background: #1e293b;
+            color: #cbd5e1;
+            cursor: pointer
+        }
+        .tab .active {
+            background: #f97316;
+            border-color: #f97316;
+            color: #fff
+        }
+
+        input,button {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #475569;
+            margin-top: 10px;
+            font-size: 16px
+        }
+        input {
+            background: #0f172a;
+            color: #fff
+        }
+        button {
+            background: #f97316;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: 700
+        }
+        .hidden {
+            display: none
+        }
+        .msg {
+            margin-top: 12px;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px
+        }
+        .error {
+            background: rgba(239, 68, 68, .15);
+            border: 1px solid rgba(239, 68, 68, .3);
+            color: #fecaca
+        }
+        .success {
+            background: rgba(34, 197, 94, .12);
+            border: 1px solid rgba(34, 197, 94, .3);
+            color: #bbf7d0
         }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500 selection:text-white">
 
-    <!-- Background Decorative Gradient Blobs -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl"></div>
-        <div class="absolute top-1/2 -right-40 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"></div>
+<body>
+    <div class="box">
+        <div class="tab">
+            <button class="active" type="button" data-tab="login">Bejelentkezés</button>
+            <button type="button" data-tab="reg">Regisztráció</button>
+        </div>
+
+        <form id="loginForm">
+            <input id="loginUser" type="text" placeholder="Felhasználónév" required>
+            <input id="loginPass" type="password" placeholder="Jelszó" required>
+            <button type="submit">Belépés</button>
+        </form>
+
+        <form id="regForm" class="hidden">
+            <input id="regUser" type="text" placeholder="Új felhasználónév" required>
+            <input id="regPass" type="password" placeholder="Jelszó" required>
+            <button type="submit">Regisztráció</button>
+        </form>
+
+        <div id="msg" class="msg hidden"></div>
     </div>
 
-    <!-- Main Content Container -->
-    <main class="relative z-10 flex-grow flex items-center justify-center p-4 sm:p-6 lg:p-8">
-
-        <!-- VIEW 1: AUTH PAGE (Login & Register Tabs) -->
-        <div id="auth-view" class="w-full max-w-md page-transition opacity-100 scale-100">
-            <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700/60 rounded-2xl shadow-2xl p-6 sm:p-8">
-               
-                <!-- Logo & Header -->
-                <div class="text-center mb-6">
-                    <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-indigo-600/20 text-indigo-400 mb-3 border border-indigo-500/30 shadow-inner">
-                        <i class="fa-solid fa-shield-halved text-2xl"></i>
-                    </div>
-                    <h1 id="auth-title" class="text-2xl font-bold text-white tracking-tight">Üdvözöljük újra!</h1>
-                    <p id="auth-subtitle" class="text-sm text-slate-400 mt-1">Kérjük, jelentkezzen be a fiókjába</p>
-                </div>
-
-                <!-- Tab Switcher Buttons -->
-                <div class="flex rounded-xl bg-slate-900/80 p-1 mb-6 border border-slate-700/50">
-                    <button id="tab-login-btn" onclick="switchTab('login')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-white bg-indigo-600 shadow transition-all">
-                        Bejelentkezés
-                    </button>
-                    <button id="tab-register-btn" onclick="switchTab('register')" class="flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all">
-                        Regisztráció
-                    </button>
-                </div>
-
-                <!-- Demo Credentials Info Box -->
-                <div id="demo-box" class="mb-6 p-3.5 bg-slate-900/60 border border-indigo-500/30 rounded-xl text-xs text-slate-300">
-                    <div class="flex items-center gap-2 mb-1.5 text-indigo-400 font-semibold">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <span>Teszt bejelentkezési adatok:</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 mt-1 bg-slate-950/40 p-2 rounded-lg font-mono text-slate-300">
-                        <div>
-                            <span class="text-slate-500 block text-[10px] uppercase tracking-wider">Felhasználónév</span>
-                            <span class="text-indigo-300 font-semibold select-all">admin</span>
-                        </div>
-                        <div>
-                            <span class="text-slate-500 block text-[10px] uppercase tracking-wider">Jelszó</span>
-                            <span class="text-indigo-300 font-semibold select-all">jelszo123</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Alert Messages -->
-                <div id="error-alert" class="hidden mb-5 p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-start gap-2.5">
-                    <i class="fa-solid fa-circle-exclamation text-rose-400 text-sm mt-0.5 shrink-0"></i>
-                    <span id="error-text">Hibás felhasználónév vagy jelszó!</span>
-                </div>
-                <div id="success-alert" class="hidden mb-5 p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-xs text-emerald-300 flex items-start gap-2.5">
-                    <i class="fa-solid fa-circle-check text-emerald-400 text-sm mt-0.5 shrink-0"></i>
-                    <span id="success-text">Sikeres művelet!</span>
-                </div>
-
-                <!-- LOGIN FORM -->
-                <form id="login-form" class="space-y-4" onsubmit="handleLogin(event)">
-                    <div>
-                        <label for="login-username" class="block text-xs font-medium text-slate-300 mb-1.5">Felhasználónév</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="fa-solid fa-user text-sm"></i>
-                            </div>
-                            <input type="text" id="login-username" required placeholder="pl. admin" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label for="login-password" class="block text-xs font-medium text-slate-300">Jelszó</label>
-                            <a href="#" onclick="alertMessage('Elfelejtett jelszó esetén forduljon az adminisztrátorhoz!')" class="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">Elfelejtette?</a>
-                        </div>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="fa-solid fa-lock text-sm"></i>
-                            </div>
-                            <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all">
-                            <button type="button" onclick="togglePasswordVisibility('login-password', 'login-toggle-icon')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 focus:outline-none transition-colors">
-                                <i id="login-toggle-icon" class="fa-solid fa-eye text-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center justify-between py-1">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" id="remember-me" class="w-4 h-4 rounded border-slate-700 bg-slate-900 text-indigo-600 focus:ring-indigo-500/40">
-                            <span class="ml-2 text-xs text-slate-300">Maradjak bejelentkezve</span>
-                        </label>
-                    </div>
-
-                    <button type="submit" id="login-submit-btn" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition-all duration-200 flex items-center justify-center gap-2 group">
-                        <span>Bejelentkezés</span>
-                        <i class="fa-solid fa-arrow-right-to-bracket text-xs transition-transform group-hover:translate-x-0.5"></i>
-                    </button>
-                </form>
-
-                <!-- REGISTER FORM (Hidden by default) -->
-                <form id="register-form" class="space-y-4 hidden" onsubmit="handleRegister(event)">
-                    <div>
-                        <label for="reg-username" class="block text-xs font-medium text-slate-300 mb-1.5">Új felhasználónév</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="fa-solid fa-user-plus text-sm"></i>
-                            </div>
-                            <input type="text" id="reg-username" required placeholder="Válasszon felhasználónevet" class="w-full pl-10 pr-4 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label for="reg-password" class="block text-xs font-medium text-slate-300 mb-1.5">Jelszó</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                                <i class="fa-solid fa-key text-sm"></i>
-                            </div>
-                            <input type="password" id="reg-password" required placeholder="••••••••" class="w-full pl-10 pr-10 py-2.5 bg-slate-900/80 border border-slate-700 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-slate-100 placeholder-slate-500 outline-none transition-all">
-                            <button type="button" onclick="togglePasswordVisibility('reg-password', 'reg-toggle-icon')" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-200 focus:outline-none transition-colors">
-                                <i id="reg-toggle-icon" class="fa-solid fa-eye text-sm"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <button type="submit" id="reg-submit-btn" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/30 transition-all duration-200 flex items-center justify-center gap-2 group">
-                        <span>Fiók létrehozása</span>
-                        <i class="fa-solid fa-user-check text-xs transition-transform group-hover:translate-x-0.5"></i>
-                    </button>
-                </form>
-
-            </div>
-        </div>
-
-        <!-- VIEW 2: REDIRECTED DASHBOARD (Initially Hidden) -->
-        <div id="dashboard-view" class="hidden w-full max-w-2xl page-transition opacity-0 scale-95">
-            <div class="bg-slate-800/80 backdrop-blur-xl border border-slate-700/60 rounded-2xl shadow-2xl overflow-hidden">
-               
-                <!-- Dashboard Header -->
-                <div class="bg-slate-800 p-6 border-b border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-                            <i class="fa-solid fa-check text-lg"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-xl font-bold text-white">Sikeres Bejelentkezés!</h2>
-                            <p class="text-xs text-slate-400">Biztonságos munkamenet aktív</p>
-                        </div>
-                    </div>
-                    <button onclick="handleLogout()" class="px-4 py-2 bg-slate-700 hover:bg-rose-600/20 hover:text-rose-300 hover:border-rose-500/40 border border-slate-600 text-slate-200 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 self-start sm:self-auto">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                        <span>Kijelentkezés</span>
-                    </button>
-                </div>
-
-                <!-- Dashboard Main Content -->
-                <div class="p-6 sm:p-8 space-y-6">
-                    <div class="bg-indigo-950/40 border border-indigo-500/20 rounded-xl p-4 flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-full bg-indigo-600/30 flex items-center justify-center text-indigo-300 text-xl font-bold shrink-0">
-                            <span id="user-avatar">A</span>
-                        </div>
-                        <div>
-                            <div class="text-xs text-indigo-400 font-semibold uppercase tracking-wider">Bejelentkezve mint</div>
-                            <div id="user-display-name" class="text-lg font-bold text-white">admin</div>
-                            <div class="text-xs text-slate-400">Utolsó belépés: Épp most</div>
-                        </div>
-                    </div>
-
-                    <!-- Simulated Dashboard Stats/Cards -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div class="bg-slate-900/60 border border-slate-700/50 p-4 rounded-xl">
-                            <div class="text-slate-400 text-xs mb-1">Munkamenet ID</div>
-                            <div class="text-sm font-mono text-indigo-400 font-semibold" id="session-id">#9482-3A</div>
-                        </div>
-                        <div class="bg-slate-900/60 border border-slate-700/50 p-4 rounded-xl">
-                            <div class="text-slate-400 text-xs mb-1">Jogosultság</div>
-                            <div class="text-sm text-emerald-400 font-semibold">Regisztrált Felhasználó</div>
-                        </div>
-                        <div class="bg-slate-900/60 border border-slate-700/50 p-4 rounded-xl">
-                            <div class="text-slate-400 text-xs mb-1">Rendszerstátusz</div>
-                            <div class="text-sm text-blue-400 font-semibold">Online (V1.2.0)</div>
-                        </div>
-                    </div>
-
-                    <!-- Welcome Information -->
-                    <div class="p-4 bg-slate-900/40 border border-slate-700/40 rounded-xl text-slate-300 text-sm space-y-3">
-                        <div class="flex items-center gap-2">
-                            <img src="pepa.png" alt="Pepa" class="h-8 w-auto object-contain">
-                        </div>
-                        <p class="text-slate-400 text-xs leading-relaxed">
-                            Ön sikeresen átlépett a védett felületre a megadott hitelesítési adatokkal. Ez a nézet szimulálja a bejelentkezés utáni céloldalt.
-                        </p>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- Custom Alert Modal -->
-        <div id="custom-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
-            <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
-                <h3 class="text-lg font-bold text-white mb-2">Informatív üzenet</h3>
-                <p id="modal-message" class="text-sm text-slate-300 mb-6"></p>
-                <button onclick="closeModal()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-xl transition-colors">
-                    Rendben
-                </button>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="relative z-10 py-4 text-center text-xs text-slate-500">
-        <p>&copy; 2026 Biztonságos Belépési Rendszer. Minden jog fenntartva.</p>
-    </footer>
-
     <script>
-        // Key used in localStorage
-        const USERS_STORAGE_KEY = "registered_users_db";
+        const KEY = 'registered_users_db';
+        const userKey = 'loggedInUser';
+        const db = JSON.parse(localStorage.getItem(KEY) || '{"admin":"123"}');
+        localStorage.setItem(KEY, JSON.stringify(db));
 
-        // Get saved users or initialize default admin account
-        function getUsersDB() {
-            const stored = localStorage.getItem(USERS_STORAGE_KEY);
-            if (stored) {
-                return JSON.parse(stored);
+        if (localStorage.getItem(userKey)) window.location.href = 'fooldal.html';
+
+        function showMsg(text, type = 'error') {
+            const m = document.getElementById('msg');
+            m.textContent = text;
+            m.className = 'msg ' + type;
+            m.classList.remove('hidden');
+        }
+
+        document.querySelectorAll('.tab button').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.tab button').forEach(b => b.classList.toggle('active', b === btn));
+                document.getElementById('loginForm').classList.toggle('hidden', btn.dataset.tab !== 'login');
+                document.getElementById('regForm').classList.toggle('hidden', btn.dataset.tab !== 'reg');
+                document.getElementById('msg').classList.add('hidden');
+            };
+        });
+
+        document.getElementById('loginForm').onsubmit = e => {
+            e.preventDefault();
+            const u = document.getElementById('loginUser').value.trim();
+            const p = document.getElementById('loginPass').value;
+            const users = JSON.parse(localStorage.getItem(KEY) || '{}');
+            if (users[u] && users[u] === p) {
+                localStorage.setItem(userKey, u);
+                window.location.href = 'fooldal.html';
             } else {
-                const defaultUsers = { "admin": "jelszo123" };
-                localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(defaultUsers));
-                return defaultUsers;
+                showMsg('Hibás felhasználónév vagy jelszó!');
             }
-        }
+        };
 
-        // Switch between Login and Register tabs
-        function switchTab(tab) {
-            const loginForm = document.getElementById('login-form');
-            const regForm = document.getElementById('register-form');
-            const loginBtn = document.getElementById('tab-login-btn');
-            const regBtn = document.getElementById('tab-register-btn');
-            const title = document.getElementById('auth-title');
-            const subtitle = document.getElementById('auth-subtitle');
-            const demoBox = document.getElementById('demo-box');
-
-            hideAlerts();
-
-            if (tab === 'login') {
-                loginForm.classList.remove('hidden');
-                regForm.classList.add('hidden');
-                demoBox.classList.remove('hidden');
-
-                loginBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-white bg-indigo-600 shadow transition-all";
-                regBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all";
-
-                title.textContent = "Üdvözöljük újra!";
-                subtitle.textContent = "Kérjük, jelentkezzen be a fiókjába";
-            } else {
-                loginForm.classList.add('hidden');
-                regForm.classList.remove('hidden');
-                demoBox.classList.add('hidden');
-
-                regBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-white bg-indigo-600 shadow transition-all";
-                loginBtn.className = "flex-1 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition-all";
-
-                title.textContent = "Fiók létrehozása";
-                subtitle.textContent = "Hozzon létre új hozzáférést a rendszerhez";
-            }
-        }
-
-        // Toggle Password Visibility
-        function togglePasswordVisibility(inputId, iconId) {
-            const passwordInput = document.getElementById(inputId);
-            const toggleIcon = document.getElementById(iconId);
-            
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        }
-
-        function hideAlerts() {
-            document.getElementById('error-alert').classList.add('hidden');
-            document.getElementById('success-alert').classList.add('hidden');
-        }
-
-        function showError(msg) {
-            hideAlerts();
-            const errorAlert = document.getElementById('error-alert');
-            document.getElementById('error-text').textContent = msg;
-            errorAlert.classList.remove('hidden');
-
-            const card = document.querySelector('#auth-view > div');
-            card.classList.add('animate-bounce');
-            setTimeout(() => card.classList.remove('animate-bounce'), 500);
-        }
-
-        function showSuccess(msg) {
-            hideAlerts();
-            const successAlert = document.getElementById('success-alert');
-            document.getElementById('success-text').textContent = msg;
-            successAlert.classList.remove('hidden');
-        }
-
-        // Handle Registration
-        function handleRegister(event) {
-            event.preventDefault();
-
-            const username = document.getElementById('reg-username').value.trim();
-            const password = document.getElementById('reg-password').value;
-            const submitBtn = document.getElementById('reg-submit-btn');
-
-            if (!username || !password) {
-                showError("Minden mező kitöltése kötelező!");
-                return;
-            }
-
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> <span>Regisztráció...</span>`;
-
-            setTimeout(() => {
-                const users = getUsersDB();
-
-                if (users[username]) {
-                    showError("Ez a felhasználónév már foglalt!");
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<span>Fiók létrehozása</span> <i class="fa-solid fa-user-check text-xs"></i>`;
-                } else {
-                    // Save user to LocalStorage
-                    users[username] = password;
-                    localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(users));
-
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = `<span>Fiók létrehozása</span> <i class="fa-solid fa-user-check text-xs"></i>`;
-
-                    document.getElementById('register-form').reset();
-                    switchTab('login');
-                    document.getElementById('login-username').value = username;
-                    showSuccess("Sikeres regisztráció! Most már bejelentkezhet.");
-                }
-            }, 600);
-        }
-
-        // Handle Login
-        function handleLogin(event) {
-            event.preventDefault();
-
-            const usernameInput = document.getElementById('login-username').value.trim();
-            const passwordInput = document.getElementById('login-password').value;
-            const submitBtn = document.getElementById('login-submit-btn');
-
-            hideAlerts();
-
-            const originalBtnContent = submitBtn.innerHTML;
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-xs"></i> <span>Ellenőrzés...</span>`;
-
-            setTimeout(() => {
-                const users = getUsersDB();
-
-                if (users[usernameInput] && users[usernameInput] === passwordInput) {
-                    transitionToDashboard(usernameInput);
-                } else {
-                    showError("Hibás felhasználónév vagy jelszó!");
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnContent;
-                }
-            }, 600);
-        }
-
-        // Transition to Dashboard Page
-        function transitionToDashboard(username) {
-            const authView = document.getElementById('auth-view');
-            const dashboardView = document.getElementById('dashboard-view');
-
-            authView.classList.remove('opacity-100', 'scale-100');
-            authView.classList.add('opacity-0', 'scale-95');
-
-            setTimeout(() => {
-                authView.classList.add('hidden');
-
-                document.getElementById('user-display-name').textContent = username;
-                document.getElementById('user-avatar').textContent = username.charAt(0).toUpperCase();
-                document.getElementById('session-id').textContent = '#' + Math.floor(1000 + Math.random() * 9000) + '-OK';
-
-                dashboardView.classList.remove('hidden');
-                setTimeout(() => {
-                    dashboardView.classList.remove('opacity-0', 'scale-95');
-                    dashboardView.classList.add('opacity-100', 'scale-100');
-                }, 50);
-            }, 300);
-        }
-
-        // Handle Logout
-        function handleLogout() {
-            const authView = document.getElementById('auth-view');
-            const dashboardView = document.getElementById('dashboard-view');
-            const submitBtn = document.getElementById('login-submit-btn');
-
-            dashboardView.classList.remove('opacity-100', 'scale-100');
-            dashboardView.classList.add('opacity-0', 'scale-95');
-
-            setTimeout(() => {
-                dashboardView.classList.add('hidden');
-
-                document.getElementById('login-form').reset();
-                document.getElementById('register-form').reset();
-                hideAlerts();
-
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = `<span>Bejelentkezés</span> <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>`;
-
-                authView.classList.remove('hidden');
-                setTimeout(() => {
-                    authView.classList.remove('opacity-0', 'scale-95');
-                    authView.classList.add('opacity-100', 'scale-100');
-                }, 50);
-            }, 300);
-        }
-
-        function alertMessage(msg) {
-            document.getElementById('modal-message').textContent = msg;
-            document.getElementById('custom-modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('custom-modal').classList.add('hidden');
-        }
-
-        // Ensure database initializes on load
-        getUsersDB();
+        document.getElementById('regForm').onsubmit = e => {
+            e.preventDefault();
+            const u = document.getElementById('regUser').value.trim();
+            const p = document.getElementById('regPass').value;
+            const users = JSON.parse(localStorage.getItem(KEY) || '{}');
+            if (!u || !p) return showMsg('Töltsd ki az összes mezőt!');
+            if (users[u]) return showMsg('Ez a felhasználónév már foglalt!');
+            users[u] = p;
+            localStorage.setItem(KEY, JSON.stringify(users));
+            document.getElementById('regForm').reset();
+            document.querySelector('[data-tab="login"]').click();
+            document.getElementById('loginUser').value = u;
+            showMsg('Sikeres regisztráció!', 'success');
+        };
     </script>
 </body>
+
 </html>
