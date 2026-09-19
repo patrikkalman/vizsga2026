@@ -5,87 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bejelentkezés</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: #fff;
-            display: grid;
-            place-items: center;
-            height: 100vh
-        }
-        .box {
-            width: 360px;
-            background: #111827;
-            border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, .25)
-        }
-        .tab {
-            display: flex;
-            gap: 8px;
-            margin: 16px 0
-        }
-        .tab button {
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid #475569;
-            background: #1e293b;
-            color: #cbd5e1;
-            cursor: pointer
-        }
-        .tab .active {
-            background: #f97316;
-            border-color: #f97316;
-            color: #fff
-        }
+    <link rel="stylesheet" href="kinezet.css">
 
-        input,button {
-            width: 100%;
-            box-sizing: border-box;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #475569;
-            margin-top: 10px;
-            font-size: 16px
-        }
-        input {
-            background: #0f172a;
-            color: #fff
-        }
-        button {
-            background: #f97316;
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            font-weight: 700
-        }
-        .hidden {
-            display: none
-        }
-        .msg {
-            margin-top: 12px;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px
-        }
-        .error {
-            background: rgba(239, 68, 68, .15);
-            border: 1px solid rgba(239, 68, 68, .3);
-            color: #fecaca
-        }
-        .success {
-            background: rgba(34, 197, 94, .12);
-            border: 1px solid rgba(34, 197, 94, .3);
-            color: #bbf7d0
-        }
-    </style>
 </head>
 
-<body>
+<body class="login-page">
     <div class="box">
         <div class="tab">
             <button class="active" type="button" data-tab="login">Bejelentkezés</button>
@@ -108,6 +32,7 @@
     </div>
 
     <script>
+        // A regisztrált felhasználók és az aktuálisan bejelentkezett felhasználó kulcsai.
         const KEY = 'registered_users_db';
         const userKey = 'loggedInUser';
         const db = JSON.parse(localStorage.getItem(KEY) || '{"admin":"123"}');
@@ -115,6 +40,7 @@
 
         if (localStorage.getItem(userKey)) window.location.href = 'fooldal.html';
 
+        // Üzenet megjelenítése a bejelentkezési űrlap alatt.
         function showMsg(text, type = 'error') {
             const m = document.getElementById('msg');
             m.textContent = text;
@@ -122,6 +48,7 @@
             m.classList.remove('hidden');
         }
 
+        // A bejelentkezés és a regisztráció közötti váltás kezelése.
         document.querySelectorAll('.tab button').forEach(btn => {
             btn.onclick = () => {
                 document.querySelectorAll('.tab button').forEach(b => b.classList.toggle('active', b === btn));
@@ -131,6 +58,7 @@
             };
         });
 
+        // Bejelentkezési adatok ellenőrzése.
         document.getElementById('loginForm').onsubmit = e => {
             e.preventDefault();
             const u = document.getElementById('loginUser').value.trim();
@@ -144,6 +72,7 @@
             }
         };
 
+        // Új felhasználó regisztrálása a böngésző helyi tárhelyébe.
         document.getElementById('regForm').onsubmit = e => {
             e.preventDefault();
             const u = document.getElementById('regUser').value.trim();

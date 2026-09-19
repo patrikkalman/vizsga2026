@@ -1,117 +1,268 @@
 <!DOCTYPE html>
 <html lang="hu">
 <head>
+  <link rel="stylesheet" href="kinezet.css">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Autós / Motoros Oldal</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: white;
-    }
-    .topbar {
-      background: #111827;
-      padding: 18px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #374151;
-    }
-    .brand {
-      font-size: 24px;
-      font-weight: 700;
-      color: #f59e0b;
-    }
-    .logout-btn {
-      background: #ef4444;
-      color: white;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-    .content {
-      padding: 40px 30px;
-    }
-    .hero {
-      background: linear-gradient(135deg, #1f2937, #111827);
-      border: 1px solid #374151;
-      border-radius: 18px;
-      padding: 30px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    h1 {
-      margin-top: 0;
-      font-size: 38px;
-      color: #f8fafc;
-    }
-    p {
-      color: #cbd5e1;
-      line-height: 1.7;
-      font-size: 18px;
-    }
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-      margin-top: 25px;
-    }
-    .card {
-      background: #111827;
-      border: 1px solid #374151;
-      border-radius: 14px;
-      padding: 20px;
-    }
-    .card h3 {
-      margin-top: 0;
-      color: #fbbf24;
-    }
-  </style>
+  <title>Apple Zone - Prémium termékbemutató</title>
+
+  
 </head>
 <body>
+
   <div class="topbar">
-    <div class="brand">Motor & Auto</div>
+    <div class="brand">
+      <svg viewBox="0 0 170 170">
+        <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.33.13-9.13-1.93-14.42-6.17-3.69-3.02-7.6-7.79-11.72-14.32-6.14-9.75-10.87-20.35-14.19-31.79-3.32-11.44-4.98-22.2-4.98-32.28 0-14.34 3.69-26.2 11.07-35.58 7.38-9.38 16.71-14.19 28.01-14.42 4.79 0 9.88 1.16 15.28 3.49 5.4 2.33 9.38 3.49 11.94 3.49 2.12 0 6.22-1.28 12.31-3.83 6.09-2.56 11.39-3.72 15.91-3.49 12.18.9 22.18 5.48 30.01 13.73-10.87 6.53-16.19 15.58-15.96 27.15.23 9.04 3.69 16.64 10.38 22.8 6.69 6.16 14.61 9.75 23.76 10.77-2.33 6.98-5.35 13.91-9.05 20.78zM119.22 31.02c0-7.38 2.67-14.42 8.01-21.12 5.34-6.7 12.01-10.63 20.02-11.8 1.01 8.26-1.57 15.82-7.74 22.68-6.17 6.86-13.43 10.63-20.29 10.24-.23-.9-.35-1.89-.35-2.98z"/>
+      </svg>
+      Apple Zone
+    </div>
     <button class="logout-btn" id="logoutBtn">Kijelentkezés</button>
   </div>
 
   <div class="content">
     <div class="hero">
-      <h1>Üdvözöllek, <span id="userName">Vendég</span>!</h1>
+      <h1>Üdvözlünk az Apple Zone-ban!</h1>
       <p>
-        Ez itt a főoldal, ide kerülhet a motorsport, autó, kereskedés, hirdetési rész,
-        galéria vagy bármilyen egyéb tartalom, amit később szeretnél megjeleníteni.
+        Fedezd fel a legújabb Apple termékeket, fejlesztéseket és az innovatív technológiákat egyetlen helyen.
       </p>
+    </div>
 
-      <div class="cards">
-        <div class="card">
-          <h3>Új autók</h3>
-          <p>Sportautók, SUV-ok és városi modellek.</p>
+    <!-- Kategóriaszűrő gombok -->
+    <div class="filter-tabs">
+      <button class="filter-btn active" data-category="all">Összes</button>
+      <button class="filter-btn" data-category="iphone">iPhone</button>
+      <button class="filter-btn" data-category="mac">Mac</button>
+      <button class="filter-btn" data-category="ipad">iPad</button>
+      <button class="filter-btn" data-category="watch">Watch</button>
+      <button class="filter-btn" data-category="airpods">AirPods</button>
+      <button class="filter-btn" data-category="homepod">HomePod</button>
+      <button class="filter-btn" data-category="appletv">Apple TV</button>
+    </div>
+
+    <div class="cards" id="productGrid">
+      <!-- A termékkártyákat a JavaScript tölti be -->
+    </div>
+  </div>
+
+  <!-- Termékrészletek felugró ablaka -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal">
+      <button class="close-btn" id="closeModal">&times;</button>
+      <div class="modal-image-wrapper">
+        <img id="modalImage" src="" alt="">
+      </div>
+      <div class="modal-content">
+        <h2 id="modalTitle">Termék Neve</h2>
+        <p id="modalCategory" class="modal-category"></p>
+        <p id="modalDescription" class="modal-description"></p>
+        <ul class="modal-specs" id="modalSpecs">
+          <!-- A kiválasztott termék műszaki adatai -->
+        </ul>
+        <div class="modal-footer">
+          <span id="modalPrice"></span>
+          <button class="detail-btn" onclick="alert('Kijelölve megvételre / érdeklődésre!')">Érdekel</button>
         </div>
-        <div class="card">
-          <h3>Motorok</h3>
-          <p>Sport, touring és klasszikus motorok.</p>
-        </div> 
       </div>
     </div>
   </div>
 
+  <footer>
+    &copy; 2026 Apple Zone - Demó oldal termékbemutatókhoz.
+  </footer>
+
   <script>
-    const user = localStorage.getItem("loggedInUser");
+    // A termékek adatai: ezekből készülnek a kártyák és a részletek.
+    const products = [
+      {
+        id: 1,
+        title: "iPhone 15 Pro",
+        category: "iphone",
+        subtitle: "Titánium kivitel",
+        description: "A17 Pro chip, úttörő teljesítmény és lenyűgöző kamerarendszer.",
+        price: "499 990 Ft-tól",
+        img: "Gemini_Generated_Image_gd041ggd041ggd04.jpg",
+        specs: { "Kijelző": "6.1\" Super Retina XDR", "Chip": "A17 Pro", "Kamera": "48 MP Főkamera" }
+      },
+      {
+        id: 2,
+        title: "MacBook Pro 16\"",
+        category: "mac",
+        subtitle: "M3 Max erőmű",
+        description: "Professzionális teljesítmény a legigényesebb feladatokhoz is.",
+        price: "1 249 990 Ft-tól",
+        img: "https://preview.redd.it/space-black-or-silver-macbook-pro-14-v0-tnusx2rgpbkd1.jpg?width=640&crop=smart&auto=webp&s=5420f58e4b31a89a08b88cf7001910e76ff8e817",
+        specs: { "Kijelző": "16.2\" Liquid Retina XDR", "Chip": "M3 Max", "Memória": "Akár 128 GB" }
+      },
+      {
+        id: 3,
+        title: "iPad Pro",
+        category: "ipad",
+        subtitle: "OLED kijelző & M4 chip",
+        description: "Hihetetlenül vékony kialakítás, elképesztő kijelző és szupergyors működés.",
+        price: "499 990 Ft-tól",
+        img: "https://static.beebom.com/wp-content/uploads/2024/05/Apple-iPad-Pro-M4.jpg?w=1250&quality=75",
+        specs: { "Kijelző": "Ultra Retina XDR", "Chip": "Apple M4", "Vastagság": "5.1 mm" }
+      },
+      {
+        id: 4,
+        title: "Apple Watch Ultra 2",
+        category: "watch",
+        subtitle: "A legstrapabíróbb óra",
+        description: "Új szintre emelt állóképesség, 3000 nites kijelző és fejlett edzésfunkciók.",
+        price: "379 990 Ft",
+        img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSsPIziKJiHMUO8JioxPOQiPpoEq7fHRPLdBwE4LQ9q2nCNeAvRyCYMv1ML&s=10",
+        specs: { "Tok": "49 mm-es Titán", "Üzemidő": "Akár 36 óra", "Vízállóság": "100 méterig" }
+      },
+      {
+        id: 5,
+        title: "Mac mini",
+        category: "mac",
+        subtitle: "Kicsi a bors...",
+        description: "Asztali teljesítmény kompakt méretben a napi munkához és alkotáshoz.",
+        price: "299 990 Ft-tól",
+        img: "https://icentre.hu/storage/files/images/products/mac-mini-m4-chip-10-magos-cpu-10-magos-gpu-16-gb-egyesitett-memoria-512-gbos-ssd_1.webp",
+        specs: { "Chip": "Apple M6", "Portok": "Thunderbolt 4, HDMI", "Méret": "19.7 cm x 19.7 cm" }
+      },
+      {
+        id: 6,
+        title: "iPhone 18 pro",
+        category: "iphone",
+        subtitle: "Dynamic Island-del",
+        description: "48 MP-es főkamera, Dynamic Island és USB-C csatlakozó.",
+        price: "549 990 Ft-tól",
+        img: "https://i0.wp.com/androidportal.hu/wp-content/uploads/2026/09/Apple-iPhone-18-Pro-2up-260909_inline.jpg.large_2x.jpg?resize=1024%2C576&ssl=1",
+        specs: { "Kijelző": "6.1\" OLED", "Chip": "A19 ", "Csatlakozó": "USB-C" }
+      },
+      {
+        id: 7,
+        title: "AirPods Pro 2",
+        category: "airpods",
+        subtitle: "Aktív zajkioltással",
+        description: "Tiszta, részletgazdag hangzás aktív zajkioltással és USB-C töltőtokkal.",
+        price: "99 990 Ft-tól",
+        img: "https://ipowerresale.com/cdn/shop/files/media_8d290923-9645-4706-a9c9-06152d4a9daf.png?v=1774480953",
+        specs: { "Hangzás": "Adaptív zajkioltás", "Tok": "USB-C töltőtok", "Üzemidő": "Akár 6 óra" }
+      },
+      {
+        id: 8,
+        title: "HomePod",
+        category: "homepod",
+        subtitle: "Térhangzás otthonra",
+        description: "Gazdag, részletgazdag hangzás és intelligens otthoni vezérlés egyetlen hangszóróban.",
+        price: "129 990 Ft-tól",
+        img: "https://feelmojo.hu/wp-content/uploads/2025/12/essentials_home_fekete_02-scaled.jpg" ,
+        specs: { "Hangzás": "Térbeli hangzás", "Asszisztens": "Siri", "Kapcsolat": "Wi-Fi és AirPlay" }
+        
+      },
+      {
+        id: 9,
+        title: "Apple TV 4K",
+        category: "appletv",
+        subtitle: "Moziélmény otthon",
+        description: "Lenyűgöző 4K HDR képminőség, gyors működés és kedvenc streamingalkalmazásaid egy helyen.",
+        price: "64 990 Ft-tól",
+        img: "Gemini_Generated_Image_ddtmnhddtmnhddtm.jpg",
+        specs: { "Kép": "4K Dolby Vision", "Hang": "Dolby Atmos", "Távirányító": "Siri Remote" }
+      }
+      
+      
+    ];
+
+    // A bejelentkezett felhasználó betöltése és ellenőrzése.
+    let user = localStorage.getItem("loggedInUser");
 
     if (!user) {
-      window.location.href = "bejelentkezesioldal.html";
+      user = "Vendég";
+      localStorage.setItem("loggedInUser", user);
     }
 
-    document.getElementById("userName").textContent = user;
+    const userNameEl = document.getElementById("userName");
+    if (userNameEl) {
+      userNameEl.textContent = user;
+    }
 
     document.getElementById("logoutBtn").addEventListener("click", function () {
       localStorage.removeItem("loggedInUser");
       window.location.href = "bejelentkezesioldal.html";
     });
+
+    // A termékkártyák megjelenítése a kiválasztott szűrő alapján.
+    const productGrid = document.getElementById("productGrid");
+
+    function renderProducts(filter = "all") {
+      productGrid.innerHTML = "";
+      
+      const filtered = filter === "all" 
+        ? products 
+        : products.filter(p => p.category === filter);
+
+      filtered.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.onclick = () => openModal(product);
+
+        card.innerHTML = `
+          <div class="card-img-wrapper">
+            <img src="${product.img}" alt="${product.title}">
+          </div>
+          <div class="subtitle">${product.subtitle}</div>
+          <h3>${product.title}</h3>
+          <p>${product.description}</p>
+          <div class="price">${product.price}</div>
+          <button class="detail-btn">Részletek</button>
+        `;
+
+        productGrid.appendChild(card);
+      });
+    }
+
+    // A kategóriaszűrő gombok eseménykezelése.
+    const filterBtns = document.querySelectorAll(".filter-btn");
+    filterBtns.forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        filterBtns.forEach(b => b.classList.remove("active"));
+        e.target.classList.add("active");
+        renderProducts(e.target.dataset.category);
+      });
+    });
+
+    renderProducts();
+
+    // A termékrészletek felugró ablakának kezelése.
+    const modal = document.getElementById("productModal");
+    const closeModal = document.getElementById("closeModal");
+
+    function openModal(product) {
+      const modalImage = document.getElementById("modalImage");
+      modalImage.src = product.img;
+      modalImage.alt = product.title;
+      document.getElementById("modalTitle").textContent = product.title;
+      document.getElementById("modalCategory").textContent = product.subtitle;
+      document.getElementById("modalDescription").textContent = product.description;
+      document.getElementById("modalPrice").textContent = product.price;
+
+      const specsList = document.getElementById("modalSpecs");
+      specsList.innerHTML = "";
+      for (const [key, val] of Object.entries(product.specs)) {
+        specsList.innerHTML += `<li><span>${key}</span> <strong>${val}</strong></li>`;
+      }
+
+      modal.classList.add("active");
+    }
+
+    closeModal.addEventListener("click", () => {
+      modal.classList.remove("active");
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.classList.remove("active");
+      }
+    });
+
+    // A teljes terméklista első megjelenítése.
+    renderProducts();
   </script>
 </body>
 </html>
